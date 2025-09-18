@@ -1,4 +1,3 @@
-// src/GoodsList.tsx
 import React from 'react';
 import { Good } from './types/Good';
 import './GoodsList.scss';
@@ -7,7 +6,7 @@ type Props = {
   goods: Good[];
 };
 
-export const GoodsList: React.FC<Props> = ({ goods }) => (
+const GoodsListComponent: React.FC<Props> = ({ goods }) => (
   <ul className="GoodsList">
     {goods.map(good => (
       <li
@@ -20,3 +19,6 @@ export const GoodsList: React.FC<Props> = ({ goods }) => (
     ))}
   </ul>
 );
+
+// otimização de renderização: só re-renderiza se `goods` mudar
+export const GoodsList = React.memo(GoodsListComponent);

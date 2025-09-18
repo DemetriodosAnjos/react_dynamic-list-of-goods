@@ -1,4 +1,3 @@
-// src/App.tsx
 import React, { useState } from 'react';
 import './App.scss';
 import { GoodsList } from './GoodsList';
@@ -7,38 +6,56 @@ import { Good } from './types/Good';
 
 export const App: React.FC = () => {
   const [goods, setGoods] = useState<Good[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleLoadAll = () => {
-    getAll().then(setGoods);
-  };
+  const loadData = async (fetchFn: () => Promise<Good[]>) => {
+    setLoading(true);
+    setError(null);
 
-  const handleLoadFirstFive = () => {
-    get5First().then(setGoods);
-  };
+    try {
+      const result = await fetchFn();
 
-  const handleLoadRed = () => {
-    getRedGoods().then(setGoods);
+      setGoods(result);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="App">
       <h1>Dynamic list of Goods</h1>
 
-      <button type="button" data-cy="all-button" onClick={handleLoadAll}>
+      <button
+        type="button"
+        data-cy="all-button"
+        onClick={() => loadData(getAll)}
+        disabled={loading}
+      >
         Load all goods
       </button>
 
       <button
         type="button"
         data-cy="first-five-button"
-        onClick={handleLoadFirstFive}
+        onClick={() => loadData(get5First)}
+        disabled={loading}
       >
         Load 5 first goods
       </button>
 
-      <button type="button" data-cy="red-button" onClick={handleLoadRed}>
+      <button
+        type="button"
+        data-cy="red-button"
+        onClick={() => loadData(getRedGoods)}
+        disabled={loading}
+      >
         Load red goods
       </button>
+
+      {error && <div className="App__error">{error}</div>}
 
       <GoodsList goods={goods} />
     </div>
