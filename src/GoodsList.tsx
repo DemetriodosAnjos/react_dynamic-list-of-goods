@@ -20,5 +20,4 @@ const GoodsListComponent: React.FC<Props> = ({ goods }) => (
   </ul>
 );
 
-// otimização de renderização: só re-renderiza se `goods` mudar
 export const GoodsList = React.memo(GoodsListComponent);
